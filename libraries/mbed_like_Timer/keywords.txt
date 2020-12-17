@@ -1,0 +1,31 @@
+############################################
+# Syntax Coloring Map For mbed_like_Timer
+############################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Timer	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+start	KEYWORD2
+stop	KEYWORD2
+reset	KEYWORD2
+read_us	KEYWORD2
+read	KEYWORD2
+read_ms	KEYWORD2
+
+wait	KEYWORD2
+wait_ms	KEYWORD2
+wait_us KEYWORD2
+
+read_high_resolution_us	KEYWORD2
+us_timestamp_t	KEYWORD2	
+
+#######################################
+# Constants (LITERAL1)
+#######################################

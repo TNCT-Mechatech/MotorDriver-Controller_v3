@@ -1,0 +1,35 @@
+###################################################
+# Syntax Coloring Map For IncrementalDecoderDriver
+###################################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+IncrementalDecoderDriver	KEYWORD1
+IDD	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+get_slave_num	KEYWORD2
+get_adc     KEYWORD2
+get_count	KEYWORD2
+set_count	KEYWORD2
+reset	KEYWORD2
+read_ms	KEYWORD2
+get_pps	KEYWORD2
+change_mode	KEYWORD2
+_search_address	KEYWORD2
+	
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+IDD_DISENABLE_TIMER LITERAL1
+IDD_mode_t  LITERAL1
+QEI_MODE LITERAL1
+ADC_MODE LITERAL1

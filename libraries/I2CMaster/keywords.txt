@@ -1,0 +1,28 @@
+############################################
+# Syntax Coloring Map For I2CMaster
+############################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+I2CMaster		KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+HardWareI2CMaster	KEYWORD2
+SoftWareI2CMaster	KEYWORD2
+
+I2CBus	KEYWORD2
+begin	KEYWORD2
+frequency	KEYWORD2
+write	KEYWORD2
+read	KEYWORD2
+
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################

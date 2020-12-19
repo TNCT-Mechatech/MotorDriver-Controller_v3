@@ -31,6 +31,11 @@ public:
         return _node[id]->pps;
     }
 
+    void task(uint8_t id)
+    {
+        _node[id]->_task();
+    }
+
 private:
     class QEINode_ : public I2CSlaveNode
     {
@@ -38,10 +43,21 @@ private:
         QEINode_(uint8_t sub_addr, uint8_t id, IDD *qei) 
         :I2CSlaveNode(sub_addr), _id(id), _qei(qei), _initTime(millis())
         {
+            _count = 0;
             _prev_count = 0;
-            _prevTime = 0;
+            _prevTime = _initTime;
+            _nowTime = millis() - _initTime;
         }
 
+        void _task()
+        {
+            uint32_t _nowTime = millis() - _initTime;
+            int32_t _count = _qei->get_count(_id);
+
+            pps = (_count - _prev_count) / ((_nowTime - _prevTime) / 1000.0f);
+            _prev_count = _count;
+            _prevTime = _nowTime;
+        }
 
         /* data(4byte): | (int32_t) count| */
         virtual inline void _res_cb(uint8_t* data, uint8_t &len)
@@ -56,29 +72,26 @@ private:
         virtual inline void _req_cb(uint8_t* data, uint8_t &len)
         {
             len = 8;
-            uint32_t nowTime = millis() - _initTime;
-            int32_t count = _qei->get_count(_id);
-            data[0] = nowTime       & 0xFF;
-            data[1] = (nowTime >> 8)  & 0xFF;
-            data[2] = (nowTime >> 16) & 0xFF;
-            data[3] = (nowTime >> 24) & 0xFF;
+            data[0] = _nowTime & 0xFF;
+            data[1] = (_nowTime >> 8) & 0xFF;
+            data[2] = (_nowTime >> 16) & 0xFF;
+            data[3] = (_nowTime >> 24) & 0xFF;
 
-            data[4] = count         & 0xFF;
-            data[5] = (count >> 8)    & 0xFF;
-            data[6] = (count >> 16)   & 0xFF;
-            data[7] = (count >> 24)   & 0xFF;
-
-            pps = (count - _prev_count) / ((nowTime - _prevTime) / 1000.0f);
-            _prev_count = count;
-            _prevTime = nowTime;
+            data[4] = _count & 0xFF;
+            data[5] = (_count >> 8) & 0xFF;
+            data[6] = (_count >> 16) & 0xFF;
+            data[7] = (_count >> 24) & 0xFF;
         }
 
         float pps;
     private:
         uint8_t _id;
         IDD *_qei;
-        
+
         const uint32_t _initTime;
+        uint32_t _nowTime;
+        int32_t _count;
+
         int32_t _prev_count;
         uint32_t _prevTime;
     };

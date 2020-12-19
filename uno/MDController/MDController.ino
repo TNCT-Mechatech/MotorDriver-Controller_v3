@@ -61,11 +61,17 @@ void setup()
 
 void loop()
 {
-  while(1) {
-    static bool led;
-    digitalWrite(LED_BUILTIN, led = !led); //normal mode
-    Serial.println(soft_qei.get_count(2));
-    delay(100);
+  static uint32_t last_time = millis();
+  static bool led;
+  while (1){
+    if (millis() - last_time >= 700)
+    {                                        //wait 700ms
+      digitalWrite(LED_BUILTIN, led = !led); //normal mode
+      last_time = millis();
+    }
+    for (int i = 0; i < IDD_num; i++)
+      nqei.task(i);
+    delay(1);
   }
 }
 

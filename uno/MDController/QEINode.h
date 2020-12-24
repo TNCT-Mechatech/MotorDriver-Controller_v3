@@ -51,8 +51,8 @@ private:
 
         void _task()
         {
-            uint32_t _nowTime = millis() - _initTime;
-            int32_t _count = _qei->get_count(_id);
+            _nowTime = millis() - _initTime;
+            _count = _qei->get_count(_id);
 
             pps = (_count - _prev_count) / ((_nowTime - _prevTime) / 1000.0f);
             _prev_count = _count;

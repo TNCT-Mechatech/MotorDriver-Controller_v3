@@ -19,7 +19,7 @@
 #include "Config.h"
 
 #include "I2CNodeHandler.h"
-#include "TestNode.h"
+//#include "TestNode.h"
 #include "MDNode.h"
 #include "QEINode.h"
 #include "PIDNode.h"
@@ -32,7 +32,7 @@ IDD soft_qei(soft_i2c, IDD_num);
 
 I2CNodeHandler server;
 
-TestNode testnode(0x00);
+//TestNode testnode(0x00);
 #define MD_SUBADD  0x10
 MDNode *nmd[MD_MAX_NUM];
 
@@ -93,7 +93,7 @@ void IDD_setup()
     delay(1000);
   }
   for (int i = 0; i < soft_qei.get_slave_num(); i++) {
-    Serial.println(soft_qei.change_mode(i, IDD::QEI_MODE)); //動作モードをQEIモードに指定
+    soft_qei.change_mode(i, IDD::QEI_MODE); //動作モードをQEIモードに指定
   }
 
   IDD_num = soft_qei.get_slave_num();
@@ -118,7 +118,7 @@ void server_init()
 
 void server_begin()
 {
-  testnode.begin(&server);
+  //testnode.begin(&server);
   nqei.begin(&server);
   for (int i = 0; i < MD_MAX_NUM; i++) {
     nmd[i]->begin(&server);
@@ -128,7 +128,7 @@ void server_begin()
   }
   
 
-  testnode.set_total_nodes(server.get_node_num());
+  //testnode.set_total_nodes(server.get_node_num());
   server.begin(i2c_addr, I2C_FREQ);
 }
 
@@ -145,7 +145,7 @@ void sys_setup()
   delete_conf();
   server_begin();
   digitalWrite(LED_BUILTIN, LOW);
-  Serial.println(F("Ping pong node sub address is 0x00"));
+  //Serial.println(F("Ping pong node sub address is 0x00"));
   Serial.print(F("md node(0x1X) total = "));
   Serial.println(MD_MAX_NUM);
   Serial.print(F("qei node(0x2X) total = "));

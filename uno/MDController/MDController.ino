@@ -155,3 +155,49 @@ void sys_setup()
   Serial.print(F("Server start running."));
   Serial.println(F("\n"));
 }
+
+/*
+#include "PinDefs.h"
+#include <HardWareI2CMaster.h>
+#include <SoftWareI2CMaster.h>
+#include <I2CMaster.h>
+#include <IncrementalDecoderDriver.h>
+
+I2CMaster *soft_i2c = new SoftWareI2CMaster();
+
+//I2CMaster *hard_i2c = new HardWareI2CMaster();
+
+IDD master(soft_i2c);
+//IDD master(hard_i2c);
+
+void setup() {
+  Serial.begin(9600);
+  soft_i2c->begin();
+  while (!master.begin()){
+    Serial.println("AAAA");
+    } //スレーブが立ち上がるまで待機
+    
+  master.change_mode(0, IDD::QEI_MODE); //0ポートの動作モードをQEIモードに指定
+  master.change_mode(1, IDD::QEI_MODE); //1ポートの動作モードをQEIモードに指定
+  master.change_mode(2, IDD::QEI_MODE); //2ポートの動作モードをQEIモードに指定
+  master.change_mode(3, IDD::QEI_MODE); //3ポートの動作モードをQEIモードに指定
+}
+
+void loop() {
+  int32_t count;
+  int32_t pps;
+  //0~3ポートに繋がれたエンコーダのパルスカウント値を取得
+  for(int i = 0;i < 4;i++){
+    count = master.get_count(i);
+    pps = master.get_pps(i);
+    Serial.print(i);
+    Serial.print("->count :\t");
+    Serial.print(count);
+    Serial.print(",");
+    Serial.print("pps:\t");
+    Serial.print(pps);
+    Serial.print("\t");
+  }
+  Serial.print("\n");
+}
+*/

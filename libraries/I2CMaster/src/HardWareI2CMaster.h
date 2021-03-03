@@ -2,10 +2,9 @@
 #define HARDWARE_I2C_MASTER_H_
 
 #include <Arduino.h>
-#include <Wire.h>
-
-
 #include "I2CMaster.h"
+
+#include <Wire.h>
 
 class HardWareI2CMaster : protected TwoWire, public I2CMaster
 {
@@ -27,7 +26,7 @@ public:
         TwoWire::begin();
     }
 
-    virtual void frequency(int hz)
+    virtual void frequency(long hz)
     {
         TwoWire::setClock(hz);
     }

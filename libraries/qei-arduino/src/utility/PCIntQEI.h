@@ -20,8 +20,8 @@
 #define NUMOF_QEICH 4
 #endif
 
-int pcint_addQEICh(uint8_t, uint8_t, uint8_t, uint8_t*, long*, uint8_t);
-void pcint_removeQEICh(uint8_t, uint8_t, uint8_t, int);
+int pcint_addQEICh(uint8_t, uint8_t, long*);
+void pcint_removeQEICh(uint8_t, uint8_t, int);
 
 #endif
 #endif

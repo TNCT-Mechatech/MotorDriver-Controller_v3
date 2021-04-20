@@ -19,7 +19,7 @@
 #include "Config.h"
 
 #include "I2CNodeHandler.h"
-#include "TestNode.h"
+//#include "TestNode.h"
 #include "MDNode.h"
 #include "QEINode.h"
 #include "PIDNode.h"
@@ -32,7 +32,7 @@ IDD soft_qei(soft_i2c, IDD_num);
 
 I2CNodeHandler server;
 
-TestNode testnode(0x00);
+//TestNode testnode(0x00);
 #define MD_SUBADD  0x10
 MDNode *nmd[MD_MAX_NUM];
 
@@ -61,11 +61,17 @@ void setup()
 
 void loop()
 {
-  while(1) {
-    static bool led;
-    digitalWrite(LED_BUILTIN, led = !led); //normal mode
-    Serial.println(soft_qei.get_count(2));
-    delay(100);
+  static uint32_t last_time = millis();
+  static bool led;
+  while (1){
+    if (millis() - last_time >= 700)
+    {                                        //wait 700ms
+      digitalWrite(LED_BUILTIN, led = !led); //normal mode
+      last_time = millis();
+    }
+    for (int i = 0; i < IDD_num; i++)
+      nqei.task(i);
+    delay(1);
   }
 }
 
@@ -87,7 +93,7 @@ void IDD_setup()
     delay(1000);
   }
   for (int i = 0; i < soft_qei.get_slave_num(); i++) {
-    Serial.println(soft_qei.change_mode(i, IDD::QEI_MODE)); //動作モードをQEIモードに指定
+    soft_qei.change_mode(i, IDD::QEI_MODE); //動作モードをQEIモードに指定
   }
 
   IDD_num = soft_qei.get_slave_num();
@@ -112,7 +118,7 @@ void server_init()
 
 void server_begin()
 {
-  testnode.begin(&server);
+  //testnode.begin(&server);
   nqei.begin(&server);
   for (int i = 0; i < MD_MAX_NUM; i++) {
     nmd[i]->begin(&server);
@@ -122,7 +128,7 @@ void server_begin()
   }
   
 
-  testnode.set_total_nodes(server.get_node_num());
+  //testnode.set_total_nodes(server.get_node_num());
   server.begin(i2c_addr, I2C_FREQ);
 }
 
@@ -139,7 +145,7 @@ void sys_setup()
   delete_conf();
   server_begin();
   digitalWrite(LED_BUILTIN, LOW);
-  Serial.println(F("Ping pong node sub address is 0x00"));
+  //Serial.println(F("Ping pong node sub address is 0x00"));
   Serial.print(F("md node(0x1X) total = "));
   Serial.println(MD_MAX_NUM);
   Serial.print(F("qei node(0x2X) total = "));
@@ -149,3 +155,49 @@ void sys_setup()
   Serial.print(F("Server start running."));
   Serial.println(F("\n"));
 }
+
+/*
+#include "PinDefs.h"
+#include <HardWareI2CMaster.h>
+#include <SoftWareI2CMaster.h>
+#include <I2CMaster.h>
+#include <IncrementalDecoderDriver.h>
+
+I2CMaster *soft_i2c = new SoftWareI2CMaster();
+
+//I2CMaster *hard_i2c = new HardWareI2CMaster();
+
+IDD master(soft_i2c);
+//IDD master(hard_i2c);
+
+void setup() {
+  Serial.begin(9600);
+  soft_i2c->begin();
+  while (!master.begin()){
+    Serial.println("AAAA");
+    } //スレーブが立ち上がるまで待機
+    
+  master.change_mode(0, IDD::QEI_MODE); //0ポートの動作モードをQEIモードに指定
+  master.change_mode(1, IDD::QEI_MODE); //1ポートの動作モードをQEIモードに指定
+  master.change_mode(2, IDD::QEI_MODE); //2ポートの動作モードをQEIモードに指定
+  master.change_mode(3, IDD::QEI_MODE); //3ポートの動作モードをQEIモードに指定
+}
+
+void loop() {
+  int32_t count;
+  int32_t pps;
+  //0~3ポートに繋がれたエンコーダのパルスカウント値を取得
+  for(int i = 0;i < 4;i++){
+    count = master.get_count(i);
+    pps = master.get_pps(i);
+    Serial.print(i);
+    Serial.print("->count :\t");
+    Serial.print(count);
+    Serial.print(",");
+    Serial.print("pps:\t");
+    Serial.print(pps);
+    Serial.print("\t");
+  }
+  Serial.print("\n");
+}
+*/

@@ -14,7 +14,6 @@ class QEI {
         virtual ~QEI() {};
         virtual long read() = 0;
         virtual void write(long) = 0;
-        virtual bool get_z() = 0;
 
         inline void reset() {
             write(0);

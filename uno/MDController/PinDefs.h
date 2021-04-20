@@ -13,17 +13,17 @@
 #define I2C_PULLUP  1               //内部でプルアップしてるから要らない。
 
 // MD's assignment
-#define MD0_PWM     3
-#define MD0_DIR     2
+#define MD3_PWM     3
+#define MD3_DIR     2
 
-#define MD1_PWM     9
-#define MD1_DIR     4
+#define MD2_PWM     9
+#define MD2_DIR     4
 
-#define MD2_PWM     10
-#define MD2_DIR     7
+#define MD1_PWM     10
+#define MD1_DIR     7
 
-#define MD3_PWM     11
-#define MD3_DIR     8
+#define MD0_PWM     11
+#define MD0_DIR     8
 
 //Controller Pins
 //コンフィグモードに移行するかどうか

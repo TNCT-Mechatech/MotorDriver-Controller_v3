@@ -18,17 +18,13 @@
 class SoftwareQEI : public QEI {
     public:
         SoftwareQEI(uint8_t, uint8_t);
-        SoftwareQEI(uint8_t, uint8_t, uint8_t);
         ~SoftwareQEI();
         virtual long read() override;
         virtual void write(long) override;
-        virtual bool get_z() override;
     private : 
         uint8_t pina_;
         uint8_t pinb_;
-        uint8_t pinz_;
         long count_;
-        uint8_t toggle_z_;
         int qeiCh_;
 };
 

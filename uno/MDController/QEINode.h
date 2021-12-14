@@ -8,6 +8,7 @@
 #include <IncrementalDecoderDriver.h>
 
 #include "I2CNodeHandler.h"
+#include "Config.h"
 
 class QEINodes
 {
@@ -28,12 +29,16 @@ public:
 
     float get_pps(uint8_t id)
     {
+      
+        //Serial.println(_node[0]->pps/96);
+        
         return _node[id]->pps;
     }
 
     void task(uint8_t id)
     {
         _node[id]->_task();
+        //Serial.println(_node[0]->pps/96);
     }
 
 private:
@@ -51,12 +56,20 @@ private:
 
         void _task()
         {
+            static uint8_t diff2_Time = 100;
             _nowTime = millis() - _initTime;
-            _count = _qei->get_count(_id);
-
-            pps = (_count - _prev_count) / ((_nowTime - _prevTime) / 1000.0f);
+            _count = _qei->get_count(_id) * (pid_conf[_id]->str.qei_dir?-1:1);
+            diff1_Time += _nowTime - _prevTime;
+            if(i == 9){
+            diff2_Time = diff1_Time / 10;
+            diff1_Time = 0;
+            i = 0;
+            }
+            
+            pps = (_count - _prev_count) / ((diff2_Time) / 1000.0f);
             _prev_count = _count;
             _prevTime = _nowTime;
+            i++;
         }
 
         /* data(4byte): | (int32_t) count| */
@@ -83,9 +96,11 @@ private:
             data[7] = (_count >> 24) & 0xFF;
         }
 
-        float pps;
+        double pps;
     private:
         uint8_t _id;
+        uint8_t i;
+        uint8_t diff1_Time;
         IDD *_qei;
 
         const uint32_t _initTime;

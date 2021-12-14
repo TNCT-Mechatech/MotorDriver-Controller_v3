@@ -5,7 +5,8 @@
 
 #define INR16MAX    32767
 
-#define I2C_FREQ 100000
+//#define I2C_FREQ 100000
+#define I2C_FREQ 9600
 
 #include "PinDefs.h"
 
@@ -52,6 +53,7 @@ void sys_setup();
 
 void setup()
 {
+  delay(1000);
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(9600);
   delay(100);
@@ -71,7 +73,7 @@ void loop()
     }
     for (int i = 0; i < IDD_num; i++)
       nqei.task(i);
-    delay(1);
+      delay(5);
   }
 }
 
@@ -90,7 +92,7 @@ void IDD_setup()
 {
   while (!soft_qei.begin()) { //スレーブが立ち上がるまで待機
     Serial.println(F("Wait connection for IncrementalDecoders..."));
-    delay(1000);
+    delay(200);
   }
   for (int i = 0; i < soft_qei.get_slave_num(); i++) {
     soft_qei.change_mode(i, IDD::QEI_MODE); //動作モードをQEIモードに指定
@@ -111,7 +113,7 @@ void server_init()
     if (i < IDD_num) {
       npid[i] = new PIDNode(PID_SUBADD | i,
                             pid_conf[i]->str.kp, pid_conf[i]->str.ki, pid_conf[i]->str.kd,
-                            INR16MAX / (pid_conf[i]->str.ppr4 * pid_conf[i]->str.rps_range) );
+                            pid_conf[i]->str.ppr2);
     }
   }
 }

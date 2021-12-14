@@ -38,11 +38,11 @@ public:
         server->add_node(this);
     }
 
+    int16_t _pwm;
 private:
     MotorDriver *_md;
     
     uint8_t _deadtime_ms;
-    int16_t _pwm;
 };
 
 #endif

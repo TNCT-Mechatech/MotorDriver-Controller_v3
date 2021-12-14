@@ -47,8 +47,9 @@ int32_t IncrementalDecoderDriver::get_count(uint8_t id)
 {
   uint8_t buffer[5] = {};
   if (id < _slave_num && !_master->read(_addresses[id], (char *)buffer, 5)) {
-    if (buffer[0] == QEI_MODE)
+    if (buffer[0] == QEI_MODE){
       return buffer[1] | (int32_t)buffer[2] << 8 | (int32_t)buffer[3] << 16 | (int32_t)buffer[4] << 24;
+    }
     else 
       return 0;
   } else

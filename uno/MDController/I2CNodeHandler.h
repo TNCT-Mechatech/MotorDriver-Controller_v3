@@ -84,7 +84,7 @@ private:
 public:
     I2CNodeHandler(){}
 
-    void begin(uint8_t my_addr, uint32_t bus_frequency = 100000)
+    void begin(uint8_t my_addr, uint32_t bus_frequency = 115200)
     {
         Wire.begin(my_addr);
         Wire.setClock(bus_frequency);

@@ -10,7 +10,6 @@
 #define OFFSET_RANGE    1   //pluse/sec
 #define PWM_RANGE       255 //pulus minus
 
-
 #include "QEINode.h"
 
 #include "I2CNodeHandler.h"
@@ -50,20 +49,21 @@ class PIDNode : public I2CSlaveNode, public FastPID
             float pps_in = format::atof(++data);
             if(stop) {
                 FastPID::clear();
-                _pps_in = 0;
-                _pps_back = 0;
+                _rps_in = 0;
+                _rps_back = 0;
                 _last_pwm_out = 0;
                 _md->drive(0);
             } else {
-                _pps_in = pps_in; 
-                _pps_back = _qei->get_pps(_idd_id);
-                _last_pwm_out = FastPID::step(_pps_in * _feedback_range, _pps_back * _feedback_range);
+              
+                _rps_in = pps_in / _ppr2;//2逓倍で割る
+                _rps_back = _qei->get_pps(_idd_id) / _ppr2;
+                _last_pwm_out = FastPID::step(_rps_in, _rps_back);
                 _md->drive(_last_pwm_out);
             }
         } else {
             FastPID::clear();
-            _pps_in = 0;
-            _pps_back = 0;
+            _rps_in = 0;
+            _rps_back = 0;
             _last_pwm_out = 0;
             _md->drive(0);
         }
@@ -73,23 +73,26 @@ class PIDNode : public I2CSlaveNode, public FastPID
     virtual inline void _req_cb(uint8_t* data, uint8_t &len)
     {
         len = 6;
-        float pps_in = _pps_in;
+        float pps_in = _rps_in * _ppr2;//2逓倍を掛ける
         format::ftoa(pps_in, data);
         data[4] = (uint8_t)abs(_last_pwm_out) & 0xFF;
         data[5] = _last_pwm_out >= 0; 
     }
 
 public:
-    PIDNode(uint8_t sub_addr, double Kp, double Ki, double Kd, uint32_t feedback_range)
+    PIDNode(uint8_t sub_addr, double Kp, double Ki, double Kd, uint16_t ppr2)
     : I2CSlaveNode(sub_addr),
-    FastPID(Kp, Ki, Kd, CONTROLL_FLQ, 9/*bit*/, true), _feedback_range(feedback_range)
+    FastPID(Kp, Ki, Kd, CONTROLL_FLQ), _ppr2(ppr2)
     {
-        _pps_in = 0;
-        _pps_back = 0;
+        _rps_in = 0;
+        _rps_back = 0;
+        FastPID::setOutputRange(-240, 240);
     }
 
     void begin(I2CNodeHandler *server, MotorDriver *md, QEINodes *qei, uint8_t idd_id)
     {
+      
+        Serial.begin(9600);
         server->add_node(this);
         _md = md;
         _qei = qei;
@@ -97,6 +100,7 @@ public:
         _md->drive(0);
     }   
 
+    int16_t _last_pwm_out;
 private:
     MotorDriver *_md;
     QEINodes *_qei;  
@@ -105,11 +109,10 @@ private:
 
     float _interval;
     
-    int16_t _last_pwm_out;
-    double _pps_back;
-    double _pps_in;
+    double _rps_back;
+    double _rps_in;
 
-    uint32_t _feedback_range;
+    uint16_t _ppr2;
 };
 
 #endif

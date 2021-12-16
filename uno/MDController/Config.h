@@ -7,7 +7,7 @@
 #define PIDCONF_LENGTH 16
 
 #define ROM_I2C_ADDR_HEAD 0
-#define ROM_PID_CONF_HEAD 1
+#define ROM_PID_CONF_HEAD 2
 
 #define CMD_MAX_BUFFER 16
 
@@ -19,8 +19,8 @@ typedef union PIDConfType
     float kp;
     float ki;
     float kd;
-    uint16_t ppr4;
-    uint16_t rps_range;
+    uint16_t ppr2;
+    bool qei_dir;
   } str_t;
   str_t str;
 
@@ -35,7 +35,7 @@ void sysconf_init();
 void sysconf_print();
 void delete_conf();
 void uart_process();
-void motor_test_process();
+//void motor_test_process();
 
 void config_mode(uint8_t mode_toggle_pin)
 {
@@ -51,11 +51,11 @@ void config_mode(uint8_t mode_toggle_pin)
     Serial.println(F("\nInput commands----"));
     Serial.println(F("RR\\n \t: EEPROM all reset."));
     Serial.println(F("a x\\n \t: x=new i2c address."));
-    Serial.println(F("px X\\n \t: x=port id, X=new Kp gain."));
-    Serial.println(F("ix X\\n \t: x=port id, X=new Ki gain."));
-    Serial.println(F("dx X\\n \t: x=port id, X=new Kd gain."));
-    Serial.println(F("rx X\\n \t: x=port id, X=new pulse per revolution."));
-    Serial.println(F("sx X\\n \t: x=port id, X=new max rps range."));
+    Serial.println(F("px Y\\n \t: x=port id, Y=new Kp gain."));
+    Serial.println(F("ix Y\\n \t: x=port id, Y=new Ki gain."));
+    Serial.println(F("dx Y\\n \t: x=port id, Y=new Kd gain."));
+    Serial.println(F("rx Y\\n \t: x=port id, Y=new pulse per revolution."));
+    Serial.println(F("qx Y\\n \t:x=port id, Y=new qei direction."));
     Serial.println(F("SS\\n \t: save settings."));
     Serial.println(F("\nend----"));
 
@@ -64,7 +64,7 @@ void config_mode(uint8_t mode_toggle_pin)
       digitalWrite(LED_BUILTIN, led = !led);  //config mode
       delay(300);
       uart_process();
-      motor_test_process();
+      //motor_test_process();
     } // end config_mode loop
   }
 }
@@ -107,9 +107,9 @@ void sysconf_print()
     Serial.print(F("\tKd gain:"));
     Serial.println(pid_conf[i]->str.kd, 4);
     Serial.print(F("\tppr:"));
-    Serial.println(pid_conf[i]->str.ppr4 / 4);
-    Serial.print(F("\trps max:"));
-    Serial.println(pid_conf[i]->str.rps_range);
+    Serial.println(pid_conf[i]->str.ppr2 / 2);
+    Serial.print(F("\tqei direction:"));
+    Serial.println(pid_conf[i]->str.qei_dir);//正面から見て左回りを正とする(正:0,負:1)
   }
   delete_conf();
   Serial.println(F("end----\n"));
@@ -205,19 +205,19 @@ void uart_process()
           Serial.println(F("Incorrect number."));
           break;
         }
-        pid_conf[head]->str.ppr4 = atoi(data + 1) * 4;
+        pid_conf[head]->str.ppr2 = atoi(data + 1) * 2;
         Serial.print(F("Change pid ppr(")); Serial.print(head); Serial.print(F(")->"));
-        Serial.println(pid_conf[head]->str.ppr4 / 4);
+        Serial.println(pid_conf[head]->str.ppr2 / 2);
         break;
-      case 's' :
+      case 'q' :
         head = atoi(&data[0]);
         if (head >= PID_MAX_NUM) {
           Serial.println(F("Incorrect number."));
           break;
         }
-        pid_conf[head]->str.rps_range = atoi(data + 1);
-        Serial.print(F("Change pid rps_range(")); Serial.print(head); Serial.print(F(")->"));
-        Serial.println(pid_conf[head]->str.rps_range);
+        pid_conf[head]->str.qei_dir = atoi(data + 1);
+        Serial.print(F("Change qei direction(")); Serial.print(head); Serial.print(F(")->"));
+        Serial.println(pid_conf[head]->str.qei_dir);
         break;
       case 'S' :
         if (data[0] == 'S')
@@ -239,7 +239,7 @@ inline void blink_led()
     digitalWrite(LED_BUILTIN, LOW);
     delay(100);
 }
-
+/*
 void motor_test_process()
 {
   uint8_t motor_pwm = analogRead(DBG_VOL);
@@ -307,6 +307,6 @@ void motor_test_process()
     
   }
 
-}
+}*/
 
 #endif

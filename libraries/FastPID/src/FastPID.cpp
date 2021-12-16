@@ -15,8 +15,8 @@ void FastPID::clear() {
 
 bool FastPID::setCoefficients(float kp, float ki, float kd, float hz) {
   _p = floatToParam(kp);
-  _i = floatToParam(ki / hz);
-  _d = floatToParam(kd * hz);
+  _i = floatToParam(ki);
+  _d = floatToParam(kd*hz);
   return ! _cfg_err;
 }
 
@@ -101,6 +101,8 @@ int16_t FastPID::step(int16_t sp, int16_t fb) {
     // int32
     I = _sum;
   }
+
+  //Serial.println(I);
 
   if (_d) {
     // (int17 - int16) - (int16 - int16) = int19
